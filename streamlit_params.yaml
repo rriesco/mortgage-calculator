@@ -1,0 +1,52 @@
+house_price:
+  min: 100000
+  max: 1000000
+  step: 5000
+  default: 300000
+  data_type: int
+  title: "House Price"
+  unit: "EUR"
+down_payment:
+  min: 0
+  max: 200000
+  step: 1000
+  default: 50000
+  data_type: int
+  title: "Down Payment"
+  unit: "EUR"
+
+years:
+  min: 10
+  max: 40
+  step: 1
+  default: 30
+  data_type: int
+  title: "Loan Term"
+  unit: "Years"
+
+cost:
+  min: 0
+  max: 30000
+  step: 1000
+  default: 10000
+  data_type: int
+  title: "Additional Costs"
+  unit: "EUR"
+
+interest_rate:
+  min: 0.00
+  max: 4.00
+  step: 0.05
+  default: 2.00
+  data_type: float
+  title: "Interest Rate"
+  unit: "%"
+
+taxes:
+  min: 0.00
+  max: 10.00
+  step: 0.01
+  default: 6.00
+  data_type: float
+  title: "Purchase Taxes"
+  unit: "%"
