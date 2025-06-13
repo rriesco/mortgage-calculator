@@ -5,7 +5,7 @@ import numpy_financial  as npf
 import os
 
 class MortgageCalculator:
-    def __init__(self, house_price, down_payment, interest_rate, loan_term_years, cost, taxes, amortization_schedule_path=None):
+    def __init__(self, house_price, down_payment, interest_rate, loan_term_years, cost, taxes, amortization_schedule_path=None, amortization_schedule_df=None):
         self.house_price = house_price
         self.down_payment = down_payment
         self.interest_rate = interest_rate / 100
@@ -17,16 +17,21 @@ class MortgageCalculator:
         self.taxes_cost = (self.taxes / 100) * self.house_price + self.cost
         self.debt = self.taxes_cost + self.house_price - self.down_payment + self.cost
         self.amortization_schedule_path = amortization_schedule_path
+        self.amortization_schedule_df = amortization_schedule_df
+        self.initial_monthly_payment = self.calculate_mortgage_payment()
         
         if self.down_payment > self.house_price:
             raise ValueError("Down payment cannot be greater than house price.")
         
     def calculate_mortgage_payment(self):
         self.monthly_payment = -npf.pmt(self.monthly_rate, self.loan_term_months, self.debt)
-    
+        return self.monthly_payment
+
     def create_extra_amortization_schedule(self):
         if self.amortization_schedule_path is not None and os.path.exists(self.amortization_schedule_path):
             self.amortization_schedule = pd.read_csv(self.amortization_schedule_path, delimiter=';')
+        elif self.amortization_schedule_df is not None and isinstance(self.amortization_schedule_df, pd.DataFrame):
+            self.amortization_schedule = self.amortization_schedule_df
         else:
             self.amortization_schedule = None
     
@@ -47,6 +52,7 @@ class MortgageCalculator:
                 extra_payment = self.amortization_schedule.loc[month - 1, 'Amortization']
 
             self.interest_payment = self.remaining_balance * self.monthly_rate
+            self.regular_debt = self.monthly_payment - self.interest_payment
             self.debt_payment = self.monthly_payment - self.interest_payment + extra_payment
             
             # Prevent over payment (if the remaining balance is less than the debt payment)
@@ -72,11 +78,15 @@ class MortgageCalculator:
 
             self.schedule_data.append({
                 'Payment Number': month,
-                'Payment': round(actual_payment, 2),
-                'Debt': round(self.debt_payment, 2),
+                'Monthly Payment': round(self.monthly_payment, 2),
+                'Total Payment': round(actual_payment + extra_payment, 2),
+                'Regular Amortization': round(self.regular_debt, 2),
+                'Additional Amortization': round(extra_payment, 2),
+                'Total Amortization': round(self.debt_payment, 2),
+                'Amortization Type': amort_type,
                 'Interest': round(self.interest_payment, 2),
                 'Remaining Balance': round(max(0, self.remaining_balance), 2),
-                'Monthly Payment': round(self.monthly_payment, 2),
+                
                 'Accrued Interest': round(self.total_interest_paid, 2),
                 'Remaining Months': self.remaining_months,
                 'Remaining Balance (after payment)': round(max(0, self.remaining_balance), 2),
