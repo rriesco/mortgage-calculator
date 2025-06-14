@@ -175,6 +175,7 @@ total_cost_str = format_thousands_dot(mortgage.total_cost)
 down_payment_str = format_thousands_dot(mortgage.down_payment)
 total_mortgage_str = format_thousands_dot(mortgage.total_mortgage)
 total_interest_paid_str = format_thousands_dot(mortgage.total_interest_paid)
+bank_fees_monthly_str = format_thousands_dot(mortgage.bank_fees_monthly)
 apr_str = format_thousands_dot(mortgage.apr)
 total_str = format_thousands_dot(mortgage.total_paid + mortgage.down_payment + mortgage.total_interest_paid)
 
@@ -193,7 +194,7 @@ with col1:
             margin-bottom: {box_gap};
     ">
         <div style="font-size:20px; font-weight:bold; text-align:center; margin-bottom:8px;">Monthly Payment</div>
-        <div style="font-size:32px; font-weight:bold; color: {color_text}; text-align:center; margin-bottom:12px;">{mortgage.monthly_payment:.2f} €</div>
+        <div style="font-size:32px; font-weight:bold; color: {color_text}; text-align:center; margin-bottom:12px;">{mortgage.monthly_payment:.2f} + {mortgage.bank_fees_monthly:.2f} €</div>
         <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-weight:bold;">
             <span>Mortgage Amount</span>
             <span style="font-weight:bold;">{total_mortgage_str} €</span>
@@ -201,6 +202,10 @@ with col1:
         <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-weight:bold;">
             <span>Down Payment</span>
             <span style="font-weight:bold;">{down_payment_str} €</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-weight:bold;">
+            <span>Monthly fees</span>
+            <span style="font-weight:bold;">{bank_fees_monthly_str} €</span>
         </div>
         <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-weight:bold;">
             <span>Financing Percentage</span>
@@ -311,6 +316,7 @@ total_cost_str_enhanced_amortization = format_thousands_dot(mortgage_enhanced_am
 down_payment_str_enhanced_amortization = format_thousands_dot(mortgage_enhanced_amortization.down_payment)
 total_mortgage_str_enhanced_amortization = format_thousands_dot(mortgage_enhanced_amortization.total_mortgage)
 total_interest_paid_str_enhanced_amortization = format_thousands_dot(mortgage_enhanced_amortization.total_interest_paid)
+bank_fees_monthly_str_enhanced_amrotization = format_thousands_dot(mortgage_enhanced_amortization.bank_fees_monthly)
 apr_str_enhanced_amortization = format_thousands_dot(mortgage_enhanced_amortization.apr)
 total_str_enhanced_amortization = format_thousands_dot(mortgage_enhanced_amortization.total_paid + mortgage_enhanced_amortization.down_payment + mortgage_enhanced_amortization.total_interest_paid)
 
@@ -325,8 +331,8 @@ with col2:
     ">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
         <div>
-            <div style="font-size:20px; font-weight:bold; color: {color_text_second}; text-align:left; margin-bottom:8px;">Initial Payment</div>
-            <div style="font-size:32px; font-weight:bold; color: {color_text_second}; text-align:left;">{mortgage_enhanced_amortization.initial_monthly_payment:.2f} €</div>
+            <div style="font-size:16px; font-weight:bold; color: {color_text_second}; text-align:left; margin-bottom:8px;">Initial Payment</div>
+            <div style="font-size:20px; font-weight:bold; color: {color_text_second}; text-align:left;">{mortgage_enhanced_amortization.initial_monthly_payment:.2f} €</div>
         </div>
         <div>
             <div style="font-size:20px; font-weight:bold; text-align:right; margin-bottom:8px;">Final Payment</div>
@@ -340,6 +346,10 @@ with col2:
         <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-weight:bold;">
             <span>Down Payment</span>
             <span style="font-weight:bold;">{down_payment_str_enhanced_amortization} €</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-weight:bold;">
+            <span>Monthly fees</span>
+            <span style="font-weight:bold;">{bank_fees_monthly_str_enhanced_amrotization} €</span>
         </div>
         <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-weight:bold;">
             <span>Financing Percentage</span>
