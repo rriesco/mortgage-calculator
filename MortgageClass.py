@@ -28,11 +28,11 @@ class MortgageCalculator:
         
     def calculate_apr(self):
         monthly_flow = self.initial_monthly_payment + self.bank_fees_monthly
-        cash_flows = [self.debt] + [-monthly_flow] * self.loan_term_months
+        cash_flows = [-self.debt] + [monthly_flow] * self.loan_term_months
         monthly_irr = npf.irr(cash_flows)
-        self.apr = (1 + monthly_irr) ** 12 - 1
+        self.apr = ((1 + monthly_irr) ** 12 - 1) * 100
         return self.apr
-
+    
     def calculate_mortgage_payment(self):
         self.monthly_payment = -npf.pmt(self.monthly_rate, self.loan_term_months, self.debt)
         return self.monthly_payment
