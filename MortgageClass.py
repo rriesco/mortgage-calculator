@@ -5,17 +5,20 @@ import numpy_financial  as npf
 import os
 
 class MortgageCalculator:
-    def __init__(self, house_price, down_payment, interest_rate, loan_term_years, cost, taxes, amortization_schedule_path=None, amortization_schedule_df=None):
+    def __init__(self, house_price, cash, interest_rate, loan_term_years, cost=0, taxes=6, bank_fees=0, bank_fees_monthly=0, amortization_schedule_path=None, amortization_schedule_df=None):
         self.house_price = house_price
-        self.down_payment = down_payment
+        self.cash = cash
         self.interest_rate = interest_rate / 100
         self.monthly_rate = self.interest_rate / 12
         self.loan_term_years = loan_term_years
         self.loan_term_months = self.loan_term_years * 12
         self.cost = cost
         self.taxes = taxes
-        self.taxes_cost = (self.taxes / 100) * self.house_price + self.cost
-        self.debt = self.taxes_cost + self.house_price - self.down_payment + self.cost
+        self.bank_fees = bank_fees
+        self.bank_fees_monthly = bank_fees_monthly 
+        self.taxes_cost_fees = (self.taxes / 100) * self.house_price + self.cost + self.bank_fees
+        self.down_payment = cash - self.taxes_cost_fees
+        self.debt = self.taxes_cost_fees + self.house_price - self.down_payment
         self.amortization_schedule_path = amortization_schedule_path
         self.amortization_schedule_df = amortization_schedule_df
         self.initial_monthly_payment = self.calculate_mortgage_payment()
@@ -23,6 +26,13 @@ class MortgageCalculator:
         if self.down_payment > self.house_price:
             raise ValueError("Down payment cannot be greater than house price.")
         
+    def calculate_apr(self):
+        monthly_flow = self.initial_monthly_payment + self.bank_fees_monthly
+        cash_flows = [self.debt] + [-monthly_flow] * self.loan_term_months
+        monthly_irr = npf.irr(cash_flows)
+        self.apr = (1 + monthly_irr) ** 12 - 1
+        return self.apr
+
     def calculate_mortgage_payment(self):
         self.monthly_payment = -npf.pmt(self.monthly_rate, self.loan_term_months, self.debt)
         return self.monthly_payment
@@ -106,9 +116,10 @@ class MortgageCalculator:
         self.calculate_mortgage_payment()
         self.create_extra_amortization_schedule()
         self.create_amortization_schedule()
-        self.total_mortgage = self.house_price + self.taxes + self.cost - self.down_payment
-        self.total_cost = self.house_price + self.taxes_cost
-        self.total_paid = self.debt + self.down_payment
+        self.calculate_apr()
+        self.total_mortgage = self.house_price + self.taxes_cost_fees - self.down_payment
+        self.total_cost = self.house_price + self.taxes_cost_fees
+        self.total_paid = self.debt + self.cash
         self.financing_percentage = self.total_mortgage / self.total_cost * 100
         # self.amortization_schedule = pd.DataFrame(self.schedule_data)
         # self.amortization_schedule.to_csv(self.amortization_schedule_path, index=False)
